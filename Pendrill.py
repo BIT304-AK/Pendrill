@@ -21,7 +21,7 @@ class Pendrill:
                        password, cert, cookies, headers, proxies, stream,
                        timeout, verify)
         self.saveAttack(attack)
-        return attack.response
+        return attack
 
     def bruteForce(self, url, prefix, sufix, data, length=None, datatype=None,
                    contains=None, action=None, username=None, password=None):

@@ -10,7 +10,7 @@ pen = Pendrill("temp")
 def main():
     """GUI design."""
     top = tkinter.Tk()
-    top.geometry('300x200')
+    top.geometry('800x600')
 
     # Notebook(tabs).
     notebook = ttk.Notebook(top)
@@ -26,20 +26,47 @@ def main():
 
     # Code to add widgets will go here...
     # Frame 1
+    attackTable = ttk.Treeview(f2, columns=('Attack No.', 'URL', 'Code'),
+                               show='headings')
     title = tkinter.Label(f1, text="Code Injection", font="bold")
     title.grid(row=0, column=0)
     urlLabel = tkinter.Label(f1, text="URL: ")
     urlLabel.grid(row=1, column=0)
     urlEntry = ttk.Entry(f1, textvariable='url')
     urlEntry.grid(row=1, column=1, padx=5, pady=5)
-    submitBtn = tkinter.Button(f1, text="Submit")
+    submitBtn = tkinter.Button(f1, text="Submit",
+                               command=lambda: submitReq(getURLInput(urlEntry), attackTable))
     submitBtn.grid(row=2, column=3)
+
+    # Frame2
+    # attackTable = ttk.Treeview(f2, columns=('Attack No.', 'URL', 'Code'),
+    #                            show='headings')
+    attackTable.pack()
+    attackTable.heading('Attack No.', text='Attack No.')
+    attackTable.heading('URL', text='URL')
+    attackTable.heading('Code', text='Code')
+    # attackTable.insert("", index="end", values=('position', 'name', 'score'))
+
     top.mainloop()
 
 
-main()
-
-
-def submitReq(url, data):
+def submitReq(url, attackTable, data=None):
     """Submit request."""
-    pen.singleAtk()
+    attack = pen.singleAtk(url, data)
+    addToTable(attack, attackTable)
+
+
+def addToTable(attack, attackTable):
+    """Add attack to table."""
+    num = len(pen.attackList) - 1
+    url = attack.url
+    code = attack.response.status_code
+    attackTable.insert("", index="end", values=(str(num), url, code))
+
+
+def getURLInput(textInput):
+    """Return textbox value."""
+    return textInput.get()
+
+
+main()
