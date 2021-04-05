@@ -29,8 +29,9 @@ def main():
     # formend = test.response.text.find("</form>")
     # if(form > -1):
     #    print(test.response.text[form:(formend+7)])
-    print(pen.singleAtk(url, username="natas15", password=password, data='a'))
-    print(pen.showAttacks(contains='This user exists.'))
+    # print(pen.singleAtk(url, username="natas15", password=password, data='a'))
+    # print(pen.showAttacks(contains='This user exists.'))
+    singleAtkTest2()
 
 
 def singleAtkTest():
@@ -54,7 +55,7 @@ def singleAtkTest2():
     atk = pen.singleAtk(url)
     print("URL", "Code", "Contains")
     print(pen.showAttacks(contains='This user exists.'))
-    print(atk.text)
+    print(atk.response.text)
 
 
 singleAtkTest2()
