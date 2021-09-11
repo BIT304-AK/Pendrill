@@ -25,11 +25,12 @@ class PendrillMainGUI:
         self.urlEntry = ttk.Entry(self.f1, textvariable='url', background="Red")
         self.urlEntry.grid(row=1, column=1, padx=5, pady=5)
 
+        # Frame for Code Injection section
         notebook2 = ttk.Notebook(self.top)
         notebook2.pack(pady=10, expand=True)
         self.codeInFrame = ttk.Frame(notebook2)
         self.codeInFrame.pack(fill='both', expand=True)
         notebook2.add(self.codeInFrame, text='Code Injections')
-
         CodeInGUI(pen, self.codeInFrame, self.urlEntry)
+
         self.top.mainloop()
