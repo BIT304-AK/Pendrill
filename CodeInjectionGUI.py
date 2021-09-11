@@ -15,20 +15,20 @@ class CodeInGUI:
 
     # pen = Pendrill("temp")
 
-    def __init__(self, pen):
+    def __init__(self, pen, top, urlEntry):
         """GUI design."""
         self.pen = pen
-        self.top = tkinter.Tk()
-        self.top.geometry('1000x600')
+        # top = tkinter.Tk()
+        # top.geometry('1000x600')
 
         # Notebook(tabs).
-        notebook = ttk.Notebook(self.top)
+        notebook = ttk.Notebook(top)
         notebook.pack(pady=10, expand=True)
-        self.f1 = ttk.Frame(notebook)
-        self.f1.pack(fill='both', expand=True)
-        self.f1.columnconfigure(0, weight=1)
-        self.f1.columnconfigure(1, weight=1)
-        notebook.add(self.f1, text='Page 1')
+        # self.f1 = ttk.Frame(notebook)
+        # self.f1.pack(fill='both', expand=True)
+        # self.f1.columnconfigure(0, weight=1)
+        # self.f1.columnconfigure(1, weight=1)
+        # notebook.add(self.f1, text='Page 1')
 
         f2 = ttk.Frame(notebook)
         f2.pack(fill='both', expand=True)
@@ -40,42 +40,43 @@ class CodeInGUI:
         self.f3.columnconfigure(1, weight=1)
         notebook.add(self.f3, text='Page 3')
 
+        self.urlEntry = urlEntry
         # Code to add widgets will go here...
         # Frame 1
         # self.attackTable = ttk.Treeview(f2, columns=('Attack No.', 'URL',
         #                                 'Code', 'Data'), show='headings')
-        title = tkinter.Label(self.f1, text="Code Injection", font="bold")
-        title.grid(row=0, column=0)
-        labelFrame = ttk.LabelFrame(self.f1)
-        labelFrame.grid(row=1, column=0)
-        urlLabel = tkinter.Label(labelFrame, text="URL: ")
-        urlLabel.grid(row=1, column=0)
-        self.urlEntry = ttk.Entry(labelFrame, textvariable='url', background="Red")
-        self.urlEntry.grid(row=1, column=1, padx=5, pady=5)
+        # title = tkinter.Label(self.f1, text="Code Injection", font="bold")
+        # title.grid(row=0, column=0)
+        # labelFrame = ttk.LabelFrame(self.f1)
+        # labelFrame.grid(row=1, column=0)
+        # urlLabel = tkinter.Label(labelFrame, text="URL: ")
+        # urlLabel.grid(row=1, column=0)
+        # self.urlEntry = ttk.Entry(labelFrame, textvariable='url', background="Red")
+        # self.urlEntry.grid(row=1, column=1, padx=5, pady=5)
 
-        dataLabel = tkinter.Label(labelFrame, text="Data: ")
-        dataLabel.grid(row=2, column=0)
-        self.dataEntry = ttk.Entry(labelFrame, textvariable='data')
-        self.dataEntry.grid(row=2, column=1, padx=5, pady=5)
+        # dataLabel = tkinter.Label(labelFrame, text="Data: ")
+        # dataLabel.grid(row=2, column=0)
+        # self.dataEntry = ttk.Entry(labelFrame, textvariable='data')
+        # self.dataEntry.grid(row=2, column=1, padx=5, pady=5)
 
-        authUsernameLabel = tkinter.Label(labelFrame, text="Username: ")
-        authUsernameLabel.grid(row=3, column=0)
-        self.authUsernameEntry = ttk.Entry(labelFrame, textvariable='authUsername')
-        self.authUsernameEntry.grid(row=3, column=1, padx=5, pady=5)
+        # authUsernameLabel = tkinter.Label(labelFrame, text="Username: ")
+        # authUsernameLabel.grid(row=3, column=0)
+        # self.authUsernameEntry = ttk.Entry(labelFrame, textvariable='authUsername')
+        # self.authUsernameEntry.grid(row=3, column=1, padx=5, pady=5)
 
-        authPasswordLabel = tkinter.Label(labelFrame, text="Password: ")
-        authPasswordLabel.grid(row=4, column=0)
-        self.authPasswordEntry = ttk.Entry(labelFrame, textvariable='authPassword')
-        self.authPasswordEntry.grid(row=4, column=1, padx=5, pady=5)
+        # authPasswordLabel = tkinter.Label(labelFrame, text="Password: ")
+        # authPasswordLabel.grid(row=4, column=0)
+        # self.authPasswordEntry = ttk.Entry(labelFrame, textvariable='authPassword')
+        # self.authPasswordEntry.grid(row=4, column=1, padx=5, pady=5)
 
-        containsLabel = tkinter.Label(labelFrame, text="Contains: ")
-        containsLabel.grid(row=5, column=0)
-        self.containsEntry = ttk.Entry(labelFrame, textvariable='contains')
-        self.containsEntry.grid(row=5, column=1, padx=5, pady=5)
+        # containsLabel = tkinter.Label(labelFrame, text="Contains: ")
+        # containsLabel.grid(row=5, column=0)
+        # self.containsEntry = ttk.Entry(labelFrame, textvariable='contains')
+        # self.containsEntry.grid(row=5, column=1, padx=5, pady=5)
 
-        self.submitBtn = tkinter.Button(labelFrame, text="Submit",
-                                        command=lambda: self.submitReq())
-        self.submitBtn.grid(row=6, column=3)
+        # self.submitBtn = tkinter.Button(labelFrame, text="Submit",
+        #                                 command=lambda: self.submitReq())
+        # self.submitBtn.grid(row=6, column=3)
         # Table
         self.attackTable = ttk.Treeview(f2, columns=('Attack No.', 'URL',
                                         'Code', 'Data', 'Query', 'Contains'),
@@ -103,23 +104,26 @@ class CodeInGUI:
         labelFrame.grid(row=1, column=0)
         urlLabel = tkinter.Label(labelFrame, text="URL: ")
         urlLabel.grid(row=1, column=0)
-        self.bfUrlEntry = ttk.Entry(labelFrame, textvariable='url')
-        self.bfUrlEntry.grid(row=1, column=1, padx=5, pady=5)
-
-        authUsernameLabel = tkinter.Label(labelFrame, text="Username: ")
-        authUsernameLabel.grid(row=3, column=0)
-        self.bfAuthUsernameEntry = ttk.Entry(labelFrame, textvariable='authUsername')
-        self.bfAuthUsernameEntry.grid(row=3, column=1, padx=5, pady=5)
-
-        authPasswordLabel = tkinter.Label(labelFrame, text="Password: ")
-        authPasswordLabel.grid(row=4, column=0)
-        self.bfAuthPasswordEntry = ttk.Entry(labelFrame, textvariable='authPassword')
-        self.bfAuthPasswordEntry.grid(row=4, column=1, padx=5, pady=5)
+        # self.urlEntry = ttk.Entry(labelFrame, textvariable='url')
+        # self.urlEntry.grid(row=1, column=1, padx=5, pady=5)
 
         containsLabel = tkinter.Label(labelFrame, text="Contains: ")
         containsLabel.grid(row=5, column=0)
         self.bfContainsEntry = ttk.Entry(labelFrame, textvariable='contains')
         self.bfContainsEntry.grid(row=5, column=1, padx=5, pady=5)
+
+        labelFrame2 = ttk.LabelFrame(self.f3, text="Auth Headers")
+        labelFrame2.grid(row=1, column=1)
+
+        authUsernameLabel = tkinter.Label(labelFrame2, text="Username: ")
+        authUsernameLabel.grid(row=1, column=0)
+        self.bfAuthUsernameEntry = ttk.Entry(labelFrame2, textvariable='authUsername')
+        self.bfAuthUsernameEntry.grid(row=1, column=1, padx=5, pady=5)
+
+        authPasswordLabel = tkinter.Label(labelFrame2, text="Password: ")
+        authPasswordLabel.grid(row=2, column=0)
+        self.bfAuthPasswordEntry = ttk.Entry(labelFrame2, textvariable='authPassword')
+        self.bfAuthPasswordEntry.grid(row=2, column=1, padx=5, pady=5)
 
         self.bfSubmitBtn = tkinter.Button(labelFrame, text="Submit",
                                           command=lambda: self.submitReqBF())
@@ -130,10 +134,10 @@ class CodeInGUI:
         # url = "http://natas15.natas.labs.overthewire.org"
         # password = "AwWj0w5cvxrZiONgZ9J5stNVkmxdk39J"
         self.urlEntry.insert(0, url)
-        self.authUsernameEntry.insert(0, "natas14")
-        self.authPasswordEntry.insert(0, password)
+        self.bfAuthUsernameEntry.insert(0, "natas14")
+        self.bfAuthPasswordEntry.insert(0, password)
 
-        self.top.mainloop()
+        # top.mainloop()
 
     def submitReq(self):
         """Submit request."""
@@ -144,14 +148,17 @@ class CodeInGUI:
         if attack.response == '404':
             messagebox.showerror("404 Error", "Url not resolved")
         else:
+            if attack.response == 401:
+                messagebox.showinfo("401 Error", "Authentication headers required!")
             query = self.containsEntry.get()
             contains = attack.responseContains(query)
             self.addToTable(attack, query, contains, self.attackTable)
-            self.getFormInputs(attack)
+            if attack.response.status_code != 401:
+                self.getFormInputs(attack)
 
     def submitReqBF(self):
         """Submit request."""
-        attack = self.pen.singleAtk(self.bfUrlEntry.get(),
+        attack = self.pen.singleAtk(self.urlEntry.get(),
                                     username=self.bfAuthUsernameEntry.get(),
                                     password=self.bfAuthPasswordEntry.get())
         if attack.response == '404':
@@ -161,7 +168,10 @@ class CodeInGUI:
             contains = attack.responseContains(query)
             # print("SubmitReqBF")
             self.addToTable(attack, query, contains, self.attackTable)
-            self.getFormInputsBF(attack)
+            if attack.response.status_code == 401:
+                messagebox.showinfo("401 Error", "Authentication headers required!")
+            else:
+                self.getFormInputsBF(attack)
 
     def addToTable(self, attack, query, contains, attackTable):
         """Add attack to table."""
@@ -193,26 +203,16 @@ class CodeInGUI:
 
     def getFormInputs(self, attack):
         """Return textbox value."""
-        # if len(self.pen.attackList) != 1:
         for pos in self.f1.grid_slaves():
             print('pos')
             print(pos, pos.grid_info()['row'], pos.grid_info()['column'])
             if int(pos.grid_info()['row']) == 5:
-                # print(len(pos.winfo_children()))
                 for child in pos.grid_slaves():
-                    # pos.forget()
                     child.destroy()
                 pos.destroy()
         inputs = attack.retrieveInputs()
-        # inputNames = []
-        # for i in inputs:
-        #     inputNames.append(i['name'])
         labelFrame = ttk.LabelFrame(self.f1, text='forms')
         labelFrame.grid(row=5, column=0)
-        # dropdown = StringVar()
-        # dropdown.set(inputNames[0])
-        # dropdownList = OptionMenu(labelFrame, dropdown, *inputNames)
-        # dropdownList.grid(row=1, column=0)
         n = 2
         stringVarList = []
         self.inputList = {}
@@ -223,14 +223,8 @@ class CodeInGUI:
             stringVarList.append(sv)
             sv.trace("w", lambda index, mode, name=i['name'], sv=sv, x=i: self.dataEntrys(x['name'],
             sv.get()))
-            # stringVarList[inputs.index(i)] = sv
-            # inputEntry = ttk.Entry(labelFrame, textvariable=stringVarList[inputs.index(i)])
             inputEntry = ttk.Entry(labelFrame, textvariable=sv)
-            # inputEntry.grid(row=n, column=1, padx=5, pady=5)
             self.inputList[i['name']] = ""
-            # stringVarList[inputs.index(i)].trace("w", lambda name, index, mode, sv=sv: self.dataEntrys(i['name'],
-            # inputList[inputs.index(i)].get()))
-            # inputList[inputs.index(i)].config(textvariable=stringVarList[inputs.index(i)])
             inputEntry.grid(row=n, column=1, padx=5, pady=5)
             n = n + 1
 
@@ -319,7 +313,7 @@ class CodeInGUI:
                                                 variable=self.saveDictChkState)
         self.saveDictCheckbox.grid(row=n+1, column=1, padx=5, pady=2)
         self.bfTable.grid(row=1, column=c, rowspan=8)
-        self.bfBtn = tkinter.Button(labelFrame, text="BF",
+        self.bfBtn = tkinter.Button(labelFrame, text="Attack",
                                     command=lambda: self.bruteForceData())
         self.bfBtn.grid(row=n+2, column=1)
 
@@ -327,10 +321,7 @@ class CodeInGUI:
         """Brute force attack."""
         lf = self.f3.nametowidget('bfLabelFrame')
         inputs = self.currentAttack.retrieveInputs()
-        url = self.bfUrlEntry.get()
-        # prefix = self.prefixEntry.get()
-        # suffix = self.suffixEntry.get()
-        # data = self.dataEntry.get()
+        url = self.urlEntry.get()
         username = self.bfAuthUsernameEntry.get()
         password = self.bfAuthPasswordEntry.get()
         inputData = []
@@ -355,10 +346,7 @@ class CodeInGUI:
             x['prefix'] = lf.nametowidget(i['name']+'prefix').get()
             x['suffix'] = lf.nametowidget(i['name']+'suffix').get()
             x['data'] = lf.nametowidget(i['name']+'data').get()
-            # x['min'] = int(lf.nametowidget(i['name']+'min').get())
-            # x['max'] = int(lf.nametowidget(i['name']+'max').get())
             x['bf'] = int(self.intvars[i['name'] + 'tbf'].get())
-            # print(type(int(self.intvars[i['name'] + 'tbf'].get())))
             inputData.append(x)
         self.bruteForce(url, inputData, datatype='charset',
                         username=username, password=password)
@@ -366,27 +354,11 @@ class CodeInGUI:
     def bruteForce(self, url, inputData, min=1, length=1, datatype=None,
                    contains=None, action=None, username=None, password=None):
         """Brute Force attack."""
-        # if datatype == 'numbers':
-        #     # print("Atk No", "Code", "data")
-        #     for i in range(length):
-        #         data = i
-        #         attack = self.pen.createAttack(url, data)
-        #         payload = {'username': prefix+str(data)+sufix}
-        #         attack.postReq(data=payload, username=username,
-        #                        password=password)
-        #         # print(i, attack.response, data)
-        #         self.pen.saveAttack(attack)
-        #         self.top.update()
-
         if datatype == 'charset':
             i = 1
-            # print("Atk No", "Code", "data", "Contains " + contains)
-            # if action == "Discover Contained Chars":
-            savedDict = []
             listList = []
             for i in inputData:
                 templist = []
-                # print(i[])
                 if int(i['bf']) == int(1):
                     for a in range(i['min']-1, i['max']):
                         for d in itertools.product(i['data'], repeat=a+1):
@@ -397,24 +369,15 @@ class CodeInGUI:
                 else:
                     templist.append(i['data'])
                 listList.append(templist)
-                # for char in data:
             payload = {}
             for i in list(itertools.product(*listList)):
                 tempDict = []
                 for x in inputData:
                     payload[x['name']] = x['prefix'] + i[inputData.index(x)] + x['suffix']
                     tempDict.append(i[inputData.index(x)])
-
-                # payload = {'username': prefix+str(x)+sufix}
                 attack = self.pen.createAttack(url, payload)
                 attack.postReq(data=payload, username=username,
                                password=password)
-                # print(i, attack.response, char,
-                #       attack.responseContains(contains))
-                # i = i + 1
-                # if self.pen.searchInResponse(attack, contains) is True:
-                #     if action == "Discover Contained Chars":
-                #         savedDict.append(char)
                 query = self.bfContainsEntry.get()
                 contains = attack.responseContains(query)
                 if self.saveDictChkState.get() == 1:
@@ -422,9 +385,7 @@ class CodeInGUI:
                         self.addToBfTable(tempDict)
                 self.pen.saveAttack(attack)
                 self.addToTable(attack, query, contains, self.attackTable)
-                self.top.update()
-                # return savedDict
-            # print("Dictionary: {0}".format(''.join(savedDict)))
+                top.update()
 
     def addColumn(self, newCol):
         """Add a col."""
