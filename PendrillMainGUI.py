@@ -19,7 +19,7 @@ class PendrillMainGUI:
         notebook = ttk.Notebook(self.top)
         notebook.pack(pady=10, expand=True)
         self.f1 = ttk.Frame(notebook)
-        self.f1.pack(fill='both', expand=True)
+        self.f1.pack(expand=True)
         urlLabel = tkinter.Label(self.f1, text="URL: ")
         urlLabel.grid(row=1, column=0)
         self.urlEntry = ttk.Entry(self.f1, textvariable='url', background="Red")
