@@ -1,5 +1,6 @@
 """sql injection functions here."""
 import requests
+from requests.exceptions import ConnectionError
 from bs4 import BeautifulSoup
 
 
@@ -30,13 +31,18 @@ class Sql:
                 headers=None, proxies=None, stream=False, timeout=None,
                 verify=True):
         """Get post response from webpage."""
-        r = requests.post(self.url, data=data, json=json, files=files,
-                          allow_redirects=allow_redirects,
-                          auth=(username, password), cert=cert,
-                          cookies=cookies, headers=headers, proxies=proxies,
-                          stream=stream, timeout=timeout, verify=verify)
+        try:
+            r = requests.post(self.url, data=data, json=json, files=files,
+                              allow_redirects=allow_redirects,
+                              auth=(username, password), cert=cert,
+                              cookies=cookies, headers=headers, proxies=proxies,
+                              stream=stream, timeout=timeout, verify=verify)
+        except ConnectionError:
+            self.response = '404'
+            return '404'
         self.saveResponse(r)
-
+        # if contains is not None:
+        #     self.responseContains(contains)
     # def postPayload(self):
     #     """Get default response from webpage."""
     #     r = requests.post(self.url, self.data)

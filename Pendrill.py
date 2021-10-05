@@ -20,8 +20,11 @@ class Pendrill:
         attack.postReq(data, json, files, allow_redirects, username,
                        password, cert, cookies, headers, proxies, stream,
                        timeout, verify)
-        self.saveAttack(attack)
-        return attack
+        if attack == '404':
+            return attack
+        else:
+            self.saveAttack(attack)
+            return attack
 
     def bruteForce(self, url, prefix, sufix, data, length=None, datatype=None,
                    contains=None, action=None, username=None, password=None):
@@ -30,7 +33,7 @@ class Pendrill:
             # print("Atk No", "Code", "data")
             for i in range(length):
                 data = i
-                attack = Sql(url, data)
+                attack = self.createAttack(url, data)
                 payload = {'username': prefix+str(data)+sufix}
                 attack.postReq(data=payload, username=username,
                                password=password)
@@ -44,7 +47,7 @@ class Pendrill:
                 savedDict = []
             for char in data:
                 payload = {'username': prefix+str(char)+sufix}
-                attack = Sql(url, payload)
+                attack = self.createAttack(url, payload)
                 attack.postReq(data=payload, username=username,
                                password=password)
                 # print(i, attack.response, char,
@@ -56,6 +59,10 @@ class Pendrill:
                 self.saveAttack(attack)
                 return savedDict
             # print("Dictionary: {0}".format(''.join(savedDict)))
+
+    def createAttack(self, url, data):
+        """Save attack."""
+        return Sql(url, data)
 
     def saveAttack(self, attack):
         """Save attack to list."""
