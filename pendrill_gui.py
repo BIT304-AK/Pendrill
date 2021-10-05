@@ -1,10 +1,6 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
-from bs4 import BeautifulSoup as bs
-from urllib.parse import urljoin
-import requests
-import datetime
 import xss
 
 def run_function():
@@ -14,7 +10,7 @@ def run_function():
             messagebox.showerror('Error', 'No url entered')
         else:
             result_box.configure(state='normal')
-            result_box.insert('end', xss.run_XSS(url))
+            result_box.insert(END, print(xss.run_XSS(url)))
             result_box.configure(state='disabled')
 
 def save_results():
@@ -50,9 +46,6 @@ url_lbl.grid(row=0, column=0)
 url_entry = Entry(top_frame, width=40)
 url_entry.grid(row=0, column=1)
 
-start_btn = Button(top_frame, text='Run', width=5, command=lambda:run_function())
-start_btn.grid(row=0, column=2, padx=2)
-
 #middle
 c1 = IntVar()
 c2 = IntVar()
@@ -74,6 +67,9 @@ result_label  = Label(bottom_frame, text='Results')
 result_label.grid(row=0, column=0)
 result_box = Text(bottom_frame, state='disabled', width=50)
 result_box.grid(row=1, column=0)
+
+start_btn = Button(top_frame, text='Run', width=5, command = run_function)
+start_btn.grid(row=0, column=2, padx=2)
 
 save_btn = Button(bottom_frame, text='Save', width=5, command=save_results)
 save_btn.grid(row=2, column=0, pady=5)

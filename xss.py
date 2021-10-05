@@ -54,7 +54,6 @@ def run_XSS(url):
             result = "XSS vulnerability detected"
             return result
 
-
 if __name__ == "__main__":
     url = "https://xss-game.appspot.com/level1/frame"
     print(run_XSS(url))
