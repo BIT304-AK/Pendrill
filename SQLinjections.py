@@ -64,9 +64,12 @@ class Sql:
 
     def responseContains(self, content):
         """Check to see if the response contains the entered text."""
-        if content in self.response.text:
-            return True
-        else:
+        try:
+            if content in self.response.text:
+                return True
+            else:
+                return False
+        except AttributeError:
             return False
 
     def retrieveInputs(self):

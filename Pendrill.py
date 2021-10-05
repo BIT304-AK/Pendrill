@@ -27,7 +27,7 @@ class Pendrill:
             return attack
 
     def bruteForce(self, url, prefix, sufix, data, length=None, datatype=None,
-                   contains=None, action=None, username=None, password=None):
+                   contains=None, action=None, username=None, password=None, allow_redirects=True):
         """Brute Force attack."""
         if datatype == 'numbers':
             # print("Atk No", "Code", "data")
@@ -36,7 +36,7 @@ class Pendrill:
                 attack = self.createAttack(url, data)
                 payload = {'username': prefix+str(data)+sufix}
                 attack.postReq(data=payload, username=username,
-                               password=password)
+                               password=password, allow_redirects=allow_redirects)
                 # print(i, attack.response, data)
                 self.saveAttack(attack)
 

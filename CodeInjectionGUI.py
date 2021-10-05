@@ -1,7 +1,7 @@
 """GUI for code injections."""
 import tkinter
 import itertools
-from tkinter import IntVar
+from tkinter import Checkbutton, IntVar
 from tkinter import ttk
 from tkinter import StringVar
 # from tkinter import OptionMenu
@@ -18,6 +18,7 @@ class CodeInGUI:
     def __init__(self, pen, top, urlEntry):
         """GUI design."""
         self.pen = pen
+        self.top = top
         # top = tkinter.Tk()
         # top.geometry('1000x600')
 
@@ -81,7 +82,7 @@ class CodeInGUI:
         self.attackTable = ttk.Treeview(f2, columns=('Attack No.', 'URL',
                                         'Code', 'Data', 'Query', 'Contains'),
                                         show='headings')
-        self.attackTable.pack(side='left', fill='y')
+        self.attackTable.grid(column=0,row=0)
         self.attackTable.heading('Attack No.', text='Attack No.')
         self.attackTable.heading('URL', text='URL')
         self.attackTable.heading('Code', text='Code')
@@ -90,30 +91,49 @@ class CodeInGUI:
         self.attackTable.heading('Contains', text='Contains')
         self.attackTable.column('Attack No.', width=60)
         self.attackTable.column('URL', width=400)
+        self.attackTable.column('Data', width=350)
+        self.attackTable.column('Query', width=200)
         self.attackTable.column('Code', width=60)
         self.attackTable.column('Contains', width=60)
 
         scrollbar = ttk.Scrollbar(f2, orient='vertical', command=self.attackTable.yview)
-        scrollbar.pack(side='right', fill='y')
+        scrollbar.grid(column=1,row=0)
         self.attackTable.configure(yscrollcommand=scrollbar.set)
+        self.attackTable.bind("<<TreeviewSelect>>", self.showResponse)
 
+        responseLabelFrame = ttk.LabelFrame(f2)
+        responseLabelFrame.grid(column=0,row=1, columnspan=2)
+        self.responseArea1 = tkinter.Text(responseLabelFrame, state='disabled')
+        self.responseArea1.grid(row=0, column=0)
+        self.responseArea2 = tkinter.Text(responseLabelFrame, state='disabled')
+        self.responseArea2.grid(row=0, column=1)
+
+        self.respVar = IntVar()
+        self.response1rdbtn = tkinter.Radiobutton(responseLabelFrame, variable=self.respVar, value=1, text="Show response here")
+        self.response1rdbtn.grid(row=1,column=0)
+        self.response2rdbtn = tkinter.Radiobutton(responseLabelFrame, variable=self.respVar, value=2, text="Show response here")
+        self.response2rdbtn.grid(row=1,column=1)
         # Frame3
         title = tkinter.Label(self.f3, text="Brute Force", font="bold")
         title.grid(row=0, column=0)
         labelFrame = ttk.LabelFrame(self.f3)
         labelFrame.grid(row=1, column=0)
-        urlLabel = tkinter.Label(labelFrame, text="URL: ")
-        urlLabel.grid(row=1, column=0)
+        # urlLabel = tkinter.Label(labelFrame, text="URL: ")
+        # urlLabel.grid(row=1, column=0)
         # self.urlEntry = ttk.Entry(labelFrame, textvariable='url')
         # self.urlEntry.grid(row=1, column=1, padx=5, pady=5)
 
         containsLabel = tkinter.Label(labelFrame, text="Contains: ")
-        containsLabel.grid(row=5, column=0)
+        containsLabel.grid(row=0, column=0)
         self.bfContainsEntry = ttk.Entry(labelFrame, textvariable='contains')
-        self.bfContainsEntry.grid(row=5, column=1, padx=5, pady=5)
+        self.bfContainsEntry.grid(row=0, column=1, padx=5, pady=5)
 
-        labelFrame2 = ttk.LabelFrame(self.f3, text="Auth Headers")
-        labelFrame2.grid(row=1, column=1)
+        self.allowRedirectVar = IntVar()
+        self.allowRedirectCheck = Checkbutton(labelFrame, text="Allow Redirects", onvalue=True, offvalue=False)
+        self.allowRedirectCheck.grid(row=1,column=0)
+
+        labelFrame2 = ttk.LabelFrame(labelFrame, text="Auth Headers")
+        labelFrame2.grid(row=2, column=0,columnspan=2)
 
         authUsernameLabel = tkinter.Label(labelFrame2, text="Username: ")
         authUsernameLabel.grid(row=1, column=0)
@@ -158,26 +178,33 @@ class CodeInGUI:
 
     def submitReqBF(self):
         """Submit request."""
+        allowRedirects = self.allowRedirectVar
         attack = self.pen.singleAtk(self.urlEntry.get(),
                                     username=self.bfAuthUsernameEntry.get(),
-                                    password=self.bfAuthPasswordEntry.get())
+                                    password=self.bfAuthPasswordEntry.get(),
+                                    allow_redirects=allowRedirects)
+        
+        
+        query = self.bfContainsEntry.get()
+        contains = attack.responseContains(query)
+        
+        # print("SubmitReqBF")
+        self.addToTable(attack, query, contains, self.attackTable)
         if attack.response == '404':
             messagebox.showerror("404 Error", "Url not resolved")
+        elif attack.response.status_code == 401:
+            messagebox.showinfo("401 Error", "Correct Authentication headers required!")
         else:
-            query = self.bfContainsEntry.get()
-            contains = attack.responseContains(query)
-            # print("SubmitReqBF")
-            self.addToTable(attack, query, contains, self.attackTable)
-            if attack.response.status_code == 401:
-                messagebox.showinfo("401 Error", "Authentication headers required!")
-            else:
-                self.getFormInputsBF(attack)
+            self.getFormInputsBF(attack)
 
     def addToTable(self, attack, query, contains, attackTable):
         """Add attack to table."""
         num = len(self.pen.attackList) - 1
         url = attack.url
-        code = attack.response.status_code
+        try:
+            code = attack.response.status_code
+        except AttributeError:
+            code = attack.response
         data = attack.data
         # print("addToTable before insert")
         attackTable.insert("", index="end", values=(str(num), url, code, data,
@@ -324,6 +351,7 @@ class CodeInGUI:
         url = self.urlEntry.get()
         username = self.bfAuthUsernameEntry.get()
         password = self.bfAuthPasswordEntry.get()
+        allowRedirects = self.allowRedirectVar
         inputData = []
         for i in inputs:
             x = {}
@@ -349,10 +377,10 @@ class CodeInGUI:
             x['bf'] = int(self.intvars[i['name'] + 'tbf'].get())
             inputData.append(x)
         self.bruteForce(url, inputData, datatype='charset',
-                        username=username, password=password)
+                        username=username, password=password, allow_redirects=allowRedirects)
 
     def bruteForce(self, url, inputData, min=1, length=1, datatype=None,
-                   contains=None, action=None, username=None, password=None):
+                   contains=None, action=None, username=None, password=None, allow_redirects=True):
         """Brute Force attack."""
         if datatype == 'charset':
             i = 1
@@ -385,7 +413,7 @@ class CodeInGUI:
                         self.addToBfTable(tempDict)
                 self.pen.saveAttack(attack)
                 self.addToTable(attack, query, contains, self.attackTable)
-                top.update()
+                self.top.update()
 
     def addColumn(self, newCol):
         """Add a col."""
@@ -410,3 +438,43 @@ class CodeInGUI:
             tempList.append(val)
         val = tuple(tempList)
         self.bfTable.insert("", index="end", values=val)
+
+    def showResponse(self, event):
+        """Shows Selected Response"""
+        index = self.attackTable.item(self.attackTable.selection())['values'][0]
+        attack = self.pen.attackList[index]
+        response = attack.response.text
+        if self.respVar.get() == 2:
+            respArea = self.responseArea2
+        else:
+            respArea = self.responseArea1
+        respArea.configure(state='normal')
+        respArea.delete(1.0, 'end')
+        respArea.insert(1.0, response)
+        self.highlight_pattern(respArea, self.attackTable.item(self.attackTable.selection())['values'][4])
+        respArea.configure(state='disabled')
+    
+    def highlight_pattern(self, text, pattern, start="1.0", end="end",
+                          regexp=False):
+        '''Apply the given tag to all text that matches the given pattern
+
+        If 'regexp' is set to True, pattern will be treated as a regular
+        expression according to Tcl's regular expression syntax.
+        '''
+
+        start = text.index(start)
+        end = text.index(end)
+        text.mark_set("matchStart", start)
+        text.mark_set("matchEnd", start)
+        text.mark_set("searchLimit", end)
+
+        count = IntVar()
+        while True:
+            index = text.search(pattern, "matchEnd","searchLimit",
+                                count=count, regexp=regexp)
+            if index == "": break
+            if count.get() == 0: break # degenerate pattern which matches zero-length strings
+            text.mark_set("matchStart", index)
+            text.mark_set("matchEnd", "%s+%sc" % (index, count.get()))
+            text.tag_add("start", "matchStart", "matchEnd")
+            text.tag_config("start", background= "black", foreground= "white")
