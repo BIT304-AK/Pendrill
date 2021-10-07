@@ -94,14 +94,14 @@ class CodeInGUI:
         self.attackTable.column('Data', width=350)
         self.attackTable.column('Query', width=200)
         self.attackTable.column('Code', width=60)
-        self.attackTable.column('Contains', width=60)
+        self.attackTable.column('Contains', width=100)
 
         scrollbar = ttk.Scrollbar(f2, orient='vertical', command=self.attackTable.yview)
-        scrollbar.grid(column=1,row=0)
+        scrollbar.grid(column=1,row=0, ipady=90)
         self.attackTable.configure(yscrollcommand=scrollbar.set)
         self.attackTable.bind("<<TreeviewSelect>>", self.showResponse)
 
-        responseLabelFrame = ttk.LabelFrame(f2)
+        responseLabelFrame = ttk.LabelFrame(f2, text="View Responses")
         responseLabelFrame.grid(column=0,row=1, columnspan=2)
         self.responseArea1 = tkinter.Text(responseLabelFrame, state='disabled')
         self.responseArea1.grid(row=0, column=0)
@@ -128,8 +128,8 @@ class CodeInGUI:
         self.bfContainsEntry = ttk.Entry(labelFrame, textvariable='contains')
         self.bfContainsEntry.grid(row=0, column=1, padx=5, pady=5)
 
-        self.allowRedirectVar = IntVar()
-        self.allowRedirectCheck = Checkbutton(labelFrame, text="Allow Redirects", onvalue=True, offvalue=False)
+        self.allowRedirectVar = IntVar(labelFrame, value=1)
+        self.allowRedirectCheck = Checkbutton(labelFrame, text="Block Redirects", variable=self.allowRedirectVar, onvalue=0, offvalue=1)
         self.allowRedirectCheck.grid(row=1,column=0)
 
         labelFrame2 = ttk.LabelFrame(labelFrame, text="Auth Headers")
@@ -161,15 +161,20 @@ class CodeInGUI:
 
     def submitReq(self):
         """Submit request."""
+        allowRedirects = bool(self.allowRedirectVar.get())
+        print("red", allowRedirects)
         attack = self.pen.singleAtk(self.urlEntry.get(),
                                     data=self.dataEntry.get(),
                                     username=self.authUsernameEntry.get(),
-                                    password=self.authPasswordEntry.get())
+                                    password=self.authPasswordEntry.get(),
+                                    allow_redirects=allowRedirects)
         if attack.response == '404':
             messagebox.showerror("404 Error", "Url not resolved")
         else:
-            if attack.response == 401:
+            if attack.response.status_code == 401:
                 messagebox.showinfo("401 Error", "Authentication headers required!")
+            if attack.response.status_code == 405:
+                messagebox.showinfo("405 Error", "This method not allowed!")
             query = self.containsEntry.get()
             contains = attack.responseContains(query)
             self.addToTable(attack, query, contains, self.attackTable)
@@ -178,7 +183,8 @@ class CodeInGUI:
 
     def submitReqBF(self):
         """Submit request."""
-        allowRedirects = self.allowRedirectVar
+        allowRedirects = bool(self.allowRedirectVar.get())
+        print("red", allowRedirects)
         attack = self.pen.singleAtk(self.urlEntry.get(),
                                     username=self.bfAuthUsernameEntry.get(),
                                     password=self.bfAuthPasswordEntry.get(),
@@ -194,6 +200,8 @@ class CodeInGUI:
             messagebox.showerror("404 Error", "Url not resolved")
         elif attack.response.status_code == 401:
             messagebox.showinfo("401 Error", "Correct Authentication headers required!")
+        elif attack.response.status_code == 405:
+                messagebox.showinfo("405 Error", "This method not allowed!")
         else:
             self.getFormInputsBF(attack)
 
@@ -369,7 +377,7 @@ class CodeInGUI:
                 messagebox.showerror("Invalid Data", i['name'] + " max must be number")
                 return False
             else:
-                x['max'] = int(lf.nametowidget(i['name']+'min').get())
+                x['max'] = int(lf.nametowidget(i['name']+'max').get())
             x['name'] = i['name']
             x['prefix'] = lf.nametowidget(i['name']+'prefix').get()
             x['suffix'] = lf.nametowidget(i['name']+'suffix').get()
