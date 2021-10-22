@@ -33,13 +33,13 @@ class CodeInGUI:
 
         f2 = ttk.Frame(notebook)
         f2.pack(fill='both', expand=True)
-        notebook.add(f2, text='Page 2')
+        notebook.add(f2, text='Attack List')
 
         self.f3 = ttk.Frame(notebook)
         self.f3.pack(fill='both', expand=True)
         self.f3.columnconfigure(0, weight=1)
         self.f3.columnconfigure(1, weight=1)
-        notebook.add(self.f3, text='Page 3')
+        notebook.add(self.f3, text='Make Attack')
 
         self.urlEntry = urlEntry
         # Code to add widgets will go here...
