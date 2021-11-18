@@ -8,6 +8,7 @@ from tkinter import ttk
 # # import PanedWindow
 # from Pendrill import Pendrill
 from CodeInjectionGUI import CodeInGUI
+from PendrillAllAttacks import PendrillAllAttacks
 
 class PendrillMainGUI:
 
@@ -25,12 +26,20 @@ class PendrillMainGUI:
         self.urlEntry = ttk.Entry(self.f1, textvariable='url', background="Red")
         self.urlEntry.grid(row=1, column=1, padx=5, pady=5)
 
-        # Frame for Code Injection section
+        
         notebook2 = ttk.Notebook(self.top)
         notebook2.pack(pady=10, expand=True)
+        
+        # Frame for Code Injection section
         self.codeInFrame = ttk.Frame(notebook2)
         self.codeInFrame.pack(fill='both', expand=True)
         notebook2.add(self.codeInFrame, text='Code Injections')
         CodeInGUI(pen, self.codeInFrame, self.urlEntry)
 
+        # Frame for All attacks section
+        self.allAtkFrame = ttk.Frame(notebook2)
+        self.allAtkFrame.pack(fill='both', expand=True)
+        notebook2.add(self.allAtkFrame, text='All Attacks')
+        self.allAtks= PendrillAllAttacks(pen, self.allAtkFrame)
+        self.allAtkFrame.bind('<Button-1>', lambda e:self.allAtks.refreshTable())
         self.top.mainloop()
