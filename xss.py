@@ -41,19 +41,9 @@ def form_submission(formDetails, url, js):
     else:
         return requests.get(fullUrl, params=data)
 
-def run_XSS(url):
 
-    forms = get_forms(url)
-    js = "<script>alert('test')</script>"
-    result = ""
-    print(f"Number of forms found: {len(forms)}")
-    for form in forms:
-        formDetails = get_form_details(form)
-        content = form_submission(formDetails, url, js).content.decode('utf-8')
-        if js in content:
-            result = "XSS vulnerability detected"
-            return result
-
-if __name__ == "__main__":
-    url = "https://xss-game.appspot.com/level1/frame"
-    print(run_XSS(url))
+    
+    
+# if __name__ == "__main__":
+#     url = "https://hlms.help.edu.my/?"
+#     print(run_XSS(url))

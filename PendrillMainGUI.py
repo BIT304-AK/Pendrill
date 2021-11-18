@@ -8,7 +8,8 @@ from tkinter import ttk
 # # import PanedWindow
 # from Pendrill import Pendrill
 from CodeInjectionGUI import CodeInGUI
-
+import pendrill_gui as pg
+import ss_tab as ss
 class PendrillMainGUI:
 
     def __init__(self, pen):
@@ -32,5 +33,16 @@ class PendrillMainGUI:
         self.codeInFrame.pack(fill='both', expand=True)
         notebook2.add(self.codeInFrame, text='Code Injections')
         CodeInGUI(pen, self.codeInFrame, self.urlEntry)
+
+
+        self.xssFrame = ttk.Frame(notebook2)
+        self.xssFrame.pack(fill='both', expand=True)
+        notebook2.add(self.xssFrame, text='XSS')
+        pg.xss_gui(self.xssFrame, self.urlEntry)
+
+        self.ssFrame = ttk.Frame(notebook2)
+        self.ssFrame.pack(fill='both', expand=True)
+        notebook2.add(self.ssFrame, text='Session scanning')
+        ss.ss_gui(self.ssFrame, self.urlEntry)
 
         self.top.mainloop()

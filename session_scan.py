@@ -1,6 +1,5 @@
 import requests
-import requests
-import time
+
 
 class ScanHeaders:
 	def __init__(self, url):
@@ -18,67 +17,63 @@ class ScanHeaders:
 	def scan_xxss(self):
 		try:
 			if self.headers["X-XSS-Protection"]:
-				print("X-XSS-Protection: ", "pass")
+				print("X-XSS-Protection: PASS")
 		except KeyError:
-			print("X-XSS-Protection header not present: ", "fail!")
+			print("X-XSS-Protection header not present: FAIL")
 
 	def scan_xContent(self):
 		try:
 			if self.headers["X-Content-Type-Options"].lower() == "nosniff":
-				print("[+]", "X-Content-Type-Options", ':', "pass")
+				print("X-Content-Type-Options: PASS")
 			else:
-				print("[-]", "X-Content-Type-Options header not set correctly", ':', "fail!")
+				print("X-Content-Type-Options header not set correctly: FAIL")
 		except KeyError:
-			print("[-]", "X-Content-Type-Options header not present", ':', "fail!")
+			print("X-Content-Type-Options header not present: FAIL")
 
 
 	def scan_xframe(self):
 		try:
 			if "deny" in self.headers["X-Frame-Options"].lower():
-				print("[+]", "X-Frame-Options", ':', "pass")
+				print("X-Frame-Options: PASS")
 			elif "sameorigin" in self.headers["X-Frame-Options"].lower():
-				print("[+]", "X-Frame-Options", ':', "pass")
+				print("X-Frame-Options: PASS")
 			else:
-				print("[-]", "X-Frame-Options header not set correctly", ':', "fail!")
+				print("X-Frame-Options header not set correctly: FAIL")
 		except KeyError:
-			print("[-]", "X-Frame-Options header not present", ':', "fail!")
+			print("X-Frame-Options header not present: FAIL")
 
 	def scan_hsts(self):
-		"""config failure if HSTS header is not present"""
 		try:
 			if self.headers["Strict-Transport-Security"]:
-				print("[+]", "Strict-Transport-Security", ':', "pass")
+				print("Strict-Transport-Security: PASS")
 		except KeyError:
-			print("[-]", "Strict-Transport-Security header not present", ':', "fail!")
+			print("Strict-Transport-Security header not present: FAIL")
 
 
 	def scan_policy(self):
-		"""config failure if Security Policy header is not present"""
 		try:
 			if self.headers["Content-Security-Policy"]:
-				print("[+]", "Content-Security-Policy", ':', "pass")
+				print("Content-Security-Policy: PASS")
 		except KeyError:
-			print("[-]", "Content-Security-Policy header not present", ':', "fail!")
+			print("Content-Security-Policy header not present: FAIL")
 
 
 	def scan_secure(self, cookie):
-		"""Set-Cookie header should have the secure attribute set"""
 		if cookie.secure:
-			print("[+]", "Secure", ':', "pass")
+			print("Secure: PASS")
 		else:
-			print("[-]", "Secure attribute not set", ':', "fail!")
+			print("Secure attribute not set: FAIL")
 
 	def scan_httponly(self, cookie):
-		"""Set-Cookie header should have the HttpOnly attribute set"""
 		if cookie.has_nonstandard_attr('httponly') or cookie.has_nonstandard_attr('HttpOnly'):
-			print("[+]", "HttpOnly", ':', "pass")
+			print("HttpOnly: PASS")
 		else:
-			print("[-]", "HttpOnly attribute not set", ':', "fail!")
+			print("HttpOnly attribute not set: FAIL")
 
 
 if __name__ == "__main__":
-
-	url = ScanHeaders("https://www.facebook.com/")
+	#https://help.edu.my/
+	url = ScanHeaders("https://help.edu.my/")
 
 	for headers in url.headers:
 		print(headers, ":", url.headers[headers])
@@ -93,5 +88,8 @@ if __name__ == "__main__":
 
 	for cookie in url.cookies:
 		print("Set-Cookie:")
+		print(cookie.name + " ===> " + cookie.value)
 		url.scan_secure(cookie)
 		url.scan_httponly(cookie)
+		print()
+

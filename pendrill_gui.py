@@ -1,77 +1,53 @@
-from tkinter import *
-from tkinter import filedialog
+from tkinter import StringVar, Text, filedialog
 from tkinter import messagebox
+from tkinter import ttk
+import tkinter as tk
+from tkinter.constants import BOTH, COMMAND, END, W
+import requests
 import xss
+import session_scan as ss
 
-def run_function():
-    url = url_entry.get()
-    if c1.get() == 1:
-        if url == "":
-            messagebox.showerror('Error', 'No url entered')
+
+def run_XSS(url):
+    forms = xss.get_forms(url)
+    js = "<script>alert('test')</script>"   
+    numOfForms = f"Number of forms found: {len(forms)}"
+    result = "" + numOfForms
+    for form in forms:
+        formDetails = xss.get_form_details(form)
+        content = xss.form_submission(formDetails, url, js).content.decode('utf-8')
+        if js in content:
+            result += "\nXSS vulnerability detected"
         else:
-            result_box.configure(state='normal')
-            result_box.insert(END, print(xss.run_XSS(url)))
-            result_box.configure(state='disabled')
+            result += "\nXSS vulnerability not detected"
 
-def save_results():
-    filename = filedialog.asksaveasfilename(defaultextension='.txt',
-    title="Save your file")
-    if filename == "":
-        return
-    else:
-        file = open(filename, 'w')
-        file.write(result_box.get('1.0', 'end-1c'))
-        file.close()
+        return result
+
+def clearTextInput(result):
+
+    result.delete("1.0","end")
 
 
-root = Tk()
-root.geometry('530x800')
+#https://xss-game.appspot.com/level1/frame
+def XSS_function(result, urlEntry):
+    clearTextInput(result)
+    print(urlEntry)
+    ex = run_XSS(urlEntry)
+    result.insert(END, ex)
+    print(ex)
 
-top_frame = Frame(root, padx=10, pady=10)
-top_frame.grid(row=0, sticky='ew')
 
-mid_frame = Frame(root, padx=10, pady=10)
-mid_frame.grid(row=1, sticky='nsew')
 
-bottom_frame = Frame(root, padx=10)
-bottom_frame.grid(row=1, sticky='ew', pady=80)
+def xss_gui(root, urlEntry):
+    # root = tk.Tk()
+    # root.geometry("800x600")
 
-root.grid_rowconfigure(1, weight=1)
-root.grid_columnconfigure(0, weight=1)
+    tab_main = ttk.Notebook(root)
+    urlEntry = urlEntry
 
-#top
-url_lbl = Label(top_frame, text='Target website:')
-url_lbl.grid(row=0, column=0)
-
-url_entry = Entry(top_frame, width=40)
-url_entry.grid(row=0, column=1)
-
-#middle
-c1 = IntVar()
-c2 = IntVar()
-c3 = IntVar()
-c4 = IntVar()
-xss_btn = Checkbutton(mid_frame, text='XSS', variable=c1)
-xss_btn.grid(row=0, column=0)
-
-ci_btn = Checkbutton(mid_frame, text='Code Injection', variable=c2)
-ci_btn.grid(row=0, column=1)
-
-port_scan_btn = Checkbutton(mid_frame, text='Port scanning', variable=c3)
-port_scan_btn.grid(row=0, column=2)
-
-session_scan_btn = Checkbutton(mid_frame, text='Session scan', variable=c4)
-session_scan_btn.grid(row=0, column=3)
-#bottom
-result_label  = Label(bottom_frame, text='Results')
-result_label.grid(row=0, column=0)
-result_box = Text(bottom_frame, state='disabled', width=50)
-result_box.grid(row=1, column=0)
-
-start_btn = Button(top_frame, text='Run', width=5, command = run_function)
-start_btn.grid(row=0, column=2, padx=2)
-
-save_btn = Button(bottom_frame, text='Save', width=5, command=save_results)
-save_btn.grid(row=2, column=0, pady=5)
-
-root.mainloop()
+    result = tk.Text(tab_main, height=10, width=50)
+    xssButton = tk.Button(tab_main, text="XSS", command=lambda:XSS_function(result, urlEntry.get()))
+    
+    xssButton.grid(row=0, column=0)
+    result.grid(row=1, column=1, pady=30)
+    tab_main.pack(expand=1, fill='both')
