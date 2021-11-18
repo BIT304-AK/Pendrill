@@ -268,7 +268,7 @@ class CodeInGUI:
 
     def addToTable(self, attack, query, contains, attackTable):
         """Add attack to table."""
-        num = len(self.pen.attackList) - 1
+        num = len(self.pen.codeInjList) - 1
         url = attack.url
         try:
             code = attack.response.status_code
@@ -465,8 +465,10 @@ class CodeInGUI:
                 for c in list(itertools.product(*cookieListList)):
                     for cookie in cookieData:
                         cookies[cookie['name']] = cookie['prefix'] + c[cookieData.index(cookie)] + cookie['suffix']
-                    attack = self.pen.createAttack(url, payload)
-                    attack.postReq(data=payload, username=username,
+                    # attack = self.pen.createAttack(url, payload)
+                    # attack.postReq(data=payload, username=username,
+                    #            password=password, cookies=cookies, allow_redirects=allow_redirects)
+                    attack = self.pen.singleAtk(url, data=payload, username=username,
                                password=password, cookies=cookies, allow_redirects=allow_redirects)
                     query = self.bfContainsEntry.get()
                     contains = attack.responseContains(query)
@@ -476,7 +478,7 @@ class CodeInGUI:
                                 self.addToBfTable(tempDict)
                     except AttributeError:
                         pass
-                    self.pen.saveAttack(attack)
+                    # self.pen.saveAttack(attack)
                     self.addToTable(attack, query, contains, self.attackTable)
                     self.top.update()
                     if contains is True:
@@ -579,7 +581,7 @@ class CodeInGUI:
     def showResponse(self, event):
         """Shows Selected Response"""
         index = self.attackTable.item(self.attackTable.selection())['values'][0]
-        attack = self.pen.attackList[index]
+        attack = self.pen.codeInjList[index]
         response = attack.response.text
         if self.respVar.get() == 2:
             respArea = self.responseArea2
