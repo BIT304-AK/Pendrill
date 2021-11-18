@@ -173,12 +173,12 @@ class CodeInGUI:
         self.cookieSection = ttk.LabelFrame(self.f3, text="Cookies", name="cookieLabelFrame")
         self.cookieSection.grid(row=1, column=1)
         # Cookie Table
-        self.cookieTable = ttk.Treeview(self.cookieSection, columns=('Name', 'Value'),
-                                        show='headings')
-        self.cookieTable.grid(column=0,row=0)
-        self.cookieTable.heading('Name', text='Name')
-        self.cookieTable.heading('Value', text='Value')
-        self.cookieTable.grid(column=0,row=0)
+        # self.cookieTable = ttk.Treeview(self.cookieSection, columns=('Name', 'Value'),
+        #                                 show='headings')
+        # self.cookieTable.grid(column=0,row=0)
+        # self.cookieTable.heading('Name', text='Name')
+        # self.cookieTable.heading('Value', text='Value')
+        # self.cookieTable.grid(column=0,row=0)
         # Add Cookie
         cookieNameLabel = tkinter.Label(self.cookieSection, text="Name: ")
         cookieNameLabel.grid(row=1, column=0)
@@ -244,7 +244,7 @@ class CodeInGUI:
         cookies = {}
         cookieData = self.getInputData(self.cookieSection, self.cookies, cookie=True)
         for child in cookieData:
-            cookies[child['name']] = child['prefix'+child['name']  ] + child['data'+child['name']] + child['suffix'+child['name']]
+            cookies[child['name']] = child['prefix'] + child['data'] + child['suffix']
         attack = self.pen.singleAtk(self.urlEntry.get(),
                                     username=self.bfAuthUsernameEntry.get(),
                                     password=self.bfAuthPasswordEntry.get(),
@@ -351,6 +351,7 @@ class CodeInGUI:
         c = 0
         self.formIntvars = {}
         self.bfTable = ttk.Treeview(labelFrame, show='headings')
+        n = 0
         for i in inputs:
             n = 0
             self.addEntrySet(labelFrame, i['name'],n,c)
@@ -359,13 +360,13 @@ class CodeInGUI:
             c = c + 2
             self.addColumn(i['name'])
         # labelFrame.grid_rowconfigure(c, weight=8)
-        
-        self.saveDictChkState = IntVar(labelFrame)
-        self.saveDictCheckbox = ttk.Checkbutton(labelFrame,
-                                                text='Save True Payloads',
-                                                variable=self.saveDictChkState)
-        self.saveDictCheckbox.grid(row=n+1, column=1, padx=5, pady=2)
-        self.bfTable.grid(row=1, column=c, rowspan=8)
+        if(len(inputs) > 0):
+            self.saveDictChkState = IntVar(labelFrame)
+            self.saveDictCheckbox = ttk.Checkbutton(labelFrame,
+                                                    text='Save True Payloads',
+                                                    variable=self.saveDictChkState)
+            self.saveDictCheckbox.grid(row=n+1, column=1, padx=5, pady=2)
+            self.bfTable.grid(row=1, column=c, rowspan=8)
         # self.bfBtn = tkinter.Button(labelFrame, text="Attack",
         #                             command=lambda: self.bruteForceData())
         # self.bfBtn.grid(row=n+2, column=1)
@@ -494,7 +495,7 @@ class CodeInGUI:
             return False
         return True
     
-    def addEntrySet(self, location, entryName, startRow, startCol):
+    def addEntrySet(self, location, entryName, startRow, startCol, cookie=False):
         if self.checkEntryExists(location, entryName) == True:
             return
         inputLabel = tkinter.Label(location, text=entryName)
@@ -538,7 +539,20 @@ class CodeInGUI:
                                                 text='Bruteforce',
                                                 variable=self.saveBfChkState, name='tbf'+entryName)
         self.saveBfCheckbox.grid(row=startRow+7, column=startCol, padx=5, pady=2)
-
+        if cookie is True:
+            deleteCookieBtn = tkinter.Button(location, text="Delete Cookie",name="del"+entryName, command=lambda: self.deleteCookie(entryName))
+            deleteCookieBtn.grid(row=startRow+7, column=startCol+2)
+    
+    def deleteCookie(self, name):
+        bfChk = self.cookieSection.nametowidget('tbf' + name)
+        endRow = int(bfChk.grid_info()['row'])
+        startRow = endRow - 7
+        for pos in self.cookieSection.grid_slaves():
+            if pos.grid_info()['row'] >= startRow and pos.grid_info()['row'] <= endRow:
+                pos.destroy()
+        self.cookieIntvars.pop('tbf'+name, None)
+        self.cookies.remove({'name':name})
+    
     def addColumn(self, newCol):
         """Add a col."""
         currentCols = list(self.bfTable['columns'])
@@ -570,7 +584,7 @@ class CodeInGUI:
         if self.checkEntryExists(self.cookieSection, name) == True:
             messagebox.showinfo("Cookie Entry already exists", "Cookie " + name + " already has entry set")
             return
-        self.addEntrySet(self.cookieSection, name,self.cookieEntryRow,0)
+        self.addEntrySet(self.cookieSection, name,self.cookieEntryRow,0,cookie=True)
         self.cookieIntvars['tbf'+name] = self.saveBfChkState
         self.cookies.append({'name':name})
         self.cookieEntryRow += 8
