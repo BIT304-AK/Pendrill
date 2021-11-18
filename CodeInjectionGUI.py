@@ -91,18 +91,20 @@ class CodeInGUI:
         # self.submitBtn.grid(row=6, column=3)
         # Table
         self.attackTable = ttk.Treeview(f2, columns=('Attack No.', 'URL',
-                                        'Code', 'Data', 'Query', 'Contains'),
+                                        'Code', 'Data','Cookies', 'Query', 'Contains'),
                                         show='headings')
         self.attackTable.grid(column=0,row=0)
         self.attackTable.heading('Attack No.', text='Attack No.')
         self.attackTable.heading('URL', text='URL')
         self.attackTable.heading('Code', text='Code')
         self.attackTable.heading('Data', text='Data')
+        self.attackTable.heading('Cookies', text='Cookies')
         self.attackTable.heading('Query', text='Query')
         self.attackTable.heading('Contains', text='Contains')
         self.attackTable.column('Attack No.', width=60)
         self.attackTable.column('URL', width=400)
         self.attackTable.column('Data', width=350)
+        self.attackTable.column('Cookies', width=350)
         self.attackTable.column('Query', width=200)
         self.attackTable.column('Code', width=60)
         self.attackTable.column('Contains', width=100)
@@ -143,6 +145,10 @@ class CodeInGUI:
         self.allowRedirectCheck = Checkbutton(labelFrame, text="Block Redirects", variable=self.allowRedirectVar, onvalue=0, offvalue=1)
         self.allowRedirectCheck.grid(row=1,column=0)
 
+        self.stopBfVar = IntVar(labelFrame, value=0)
+        self.stopBfCheck = Checkbutton(labelFrame, text="Stop Brute Force when query in response", variable=self.stopBfVar, onvalue=1, offvalue=0)
+        self.stopBfCheck.grid(row=1,column=1)
+
         labelFrame2 = ttk.LabelFrame(labelFrame, text="Auth Headers")
         labelFrame2.grid(row=2, column=0,columnspan=2)
 
@@ -156,9 +162,12 @@ class CodeInGUI:
         self.bfAuthPasswordEntry = ttk.Entry(labelFrame2, textvariable='authPassword')
         self.bfAuthPasswordEntry.grid(row=2, column=1, padx=5, pady=5)
 
-        self.bfSubmitBtn = tkinter.Button(labelFrame, text="Submit",
+        self.bfSubmitBtn = tkinter.Button(labelFrame, text="Get Form Entries",
                                           command=lambda: self.submitReqBF())
-        self.bfSubmitBtn.grid(row=7, column=3)
+        self.bfSubmitBtn.grid(row=7, column=2)
+        self.bfBtn = tkinter.Button(labelFrame, text="Attack",
+                                    command=lambda: self.bruteForceData())
+        self.bfBtn.grid(row=7, column=3)
 
         # Cookie section
         self.cookieSection = ttk.LabelFrame(self.f3, text="Cookies", name="cookieLabelFrame")
@@ -182,17 +191,20 @@ class CodeInGUI:
         # self.cookieValueEntry.grid(row=2, column=1, padx=5, pady=5)
         self.cookieEntryRow = 5
         self.cookieIntvars = {}
+        self.formIntvars = {}
         self.cookies = []
         self.cookieAddBtn = tkinter.Button(self.cookieSection, text="Add",
                                           command=lambda: self.addCookie())
         self.cookieAddBtn.grid(row=3, column=0)
         self.bindScroll(self.sf, self.f3)
-        url = "http://natas14.natas.labs.overthewire.org"
-        password = "Lg96M10TdfaPyVBkJdjymbllQ5L6qdl1"
+        # url = "http://natas14.natas.labs.overthewire.org"
+        # password = "Lg96M10TdfaPyVBkJdjymbllQ5L6qdl1"
+        url = "http://natas18.natas.labs.overthewire.org"
+        password = "xvKIqDjy4OPv7wCRgDlmj0pFsCsDjhdP"
         # url = "http://natas15.natas.labs.overthewire.org"
         # password = "AwWj0w5cvxrZiONgZ9J5stNVkmxdk39J"
         self.urlEntry.insert(0, url)
-        self.bfAuthUsernameEntry.insert(0, "natas14")
+        self.bfAuthUsernameEntry.insert(0, "natas18")
         self.bfAuthPasswordEntry.insert(0, password)
 
         # top.mainloop()
@@ -230,7 +242,7 @@ class CodeInGUI:
         """Submit request."""
         allowRedirects = bool(self.allowRedirectVar.get())
         cookies = {}
-        cookieData = self.getInputData(self.cookieSection, self.cookies)
+        cookieData = self.getInputData(self.cookieSection, self.cookies, cookie=True)
         for child in cookieData:
             cookies[child['name']] = child['prefix'+child['name']  ] + child['data'+child['name']] + child['suffix'+child['name']]
         attack = self.pen.singleAtk(self.urlEntry.get(),
@@ -263,8 +275,9 @@ class CodeInGUI:
         except AttributeError:
             code = attack.response
         data = attack.data
+        cookies = attack.cookies
         # print("addToTable before insert")
-        attackTable.insert("", index="end", values=(str(num), url, code, data,
+        attackTable.insert("", index="end", values=(str(num), url, code, data, cookies,
                            query, str(contains)))
         # print("addToTable after insert")
 
@@ -353,21 +366,25 @@ class CodeInGUI:
                                                 variable=self.saveDictChkState)
         self.saveDictCheckbox.grid(row=n+1, column=1, padx=5, pady=2)
         self.bfTable.grid(row=1, column=c, rowspan=8)
-        self.bfBtn = tkinter.Button(labelFrame, text="Attack",
-                                    command=lambda: self.bruteForceData())
-        self.bfBtn.grid(row=n+2, column=1)
+        # self.bfBtn = tkinter.Button(labelFrame, text="Attack",
+        #                             command=lambda: self.bruteForceData())
+        # self.bfBtn.grid(row=n+2, column=1)
         self.bindScroll(self.sf, labelFrame)
 
     def bruteForceData(self):
         """Brute force attack."""
-        formDataLF = self.f3.nametowidget('bfLabelFrame')
-        inputs = self.currentAttack.retrieveInputs()
+        try:
+            formDataLF = self.f3.nametowidget('bfLabelFrame')
+            inputs = self.currentAttack.retrieveInputs()
+            inputData = self.getInputData(formDataLF, inputs)
+        except KeyError:
+            inputData = []
+        
         url = self.urlEntry.get()
         username = self.bfAuthUsernameEntry.get()
         password = self.bfAuthPasswordEntry.get()
         allowRedirects = self.allowRedirectVar
         
-        inputData = self.getInputData(formDataLF, inputs)
         cookieData = self.getInputData(self.cookieSection, self.cookies, cookie=True)
         
         self.bruteForce(url, inputData, datatype='charset',
@@ -396,7 +413,7 @@ class CodeInGUI:
             x['prefix'] = location.nametowidget('prefix'+i['name']).get()
             x['suffix'] = location.nametowidget('suffix'+i['name']).get()
             x['data'] = location.nametowidget('data'+i['name']).get()
-            if cookie==False:
+            if cookie is False:
                 x['bf'] = int(self.formIntvars['tbf'+ i['name'] ].get())
             else:
                 x['bf'] = int(self.cookieIntvars['tbf'+ i['name'] ].get())
@@ -453,14 +470,31 @@ class CodeInGUI:
                                password=password, cookies=cookies, allow_redirects=allow_redirects)
                     query = self.bfContainsEntry.get()
                     contains = attack.responseContains(query)
-                    if self.saveDictChkState.get() == 1:
-                        if contains is True:
-                            self.addToBfTable(tempDict)
+                    try:
+                        if self.saveDictChkState.get() == 1:
+                            if contains is True:
+                                self.addToBfTable(tempDict)
+                    except AttributeError:
+                        pass
                     self.pen.saveAttack(attack)
                     self.addToTable(attack, query, contains, self.attackTable)
                     self.top.update()
-
+                    if contains is True:
+                        # natas16" and password LIKE BINARY "%
+                        print("test break", self.stopBfVar.get())
+                        if self.stopBfVar.get() == 1:
+                            print("test break", self.stopBfVar.get())
+                            return
+    def checkEntryExists(self, location, entryName):
+        try: 
+            location.nametowidget('data'+entryName)
+        except KeyError:
+            return False
+        return True
+    
     def addEntrySet(self, location, entryName, startRow, startCol):
+        if self.checkEntryExists(location, entryName) == True:
+            return
         inputLabel = tkinter.Label(location, text=entryName)
         inputLabel.grid(row=startRow, column=startCol)
 
@@ -531,6 +565,9 @@ class CodeInGUI:
         name = self.cookieNameEntry.get()
         # value = self.cookieValueEntry.get()
         # self.cookieTable.insert("", index="end", values=(name, value))
+        if self.checkEntryExists(self.cookieSection, name) == True:
+            messagebox.showinfo("Cookie Entry already exists", "Cookie " + name + " already has entry set")
+            return
         self.addEntrySet(self.cookieSection, name,self.cookieEntryRow,0)
         self.cookieIntvars['tbf'+name] = self.saveBfChkState
         self.cookies.append({'name':name})
@@ -551,7 +588,7 @@ class CodeInGUI:
         respArea.configure(state='normal')
         respArea.delete(1.0, 'end')
         respArea.insert(1.0, response)
-        self.highlight_pattern(respArea, self.attackTable.item(self.attackTable.selection())['values'][4])
+        self.highlight_pattern(respArea, self.attackTable.item(self.attackTable.selection())['values'][5])
         respArea.configure(state='disabled')
     
     def highlight_pattern(self, text, pattern, start="1.0", end="end",
