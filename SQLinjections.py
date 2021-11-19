@@ -7,12 +7,13 @@ from bs4 import BeautifulSoup
 class Sql:
     """Place Sql injection functions here."""
 
-    def __init__(self, url, data=None):
+    def __init__(self, url, data=None, cookies=None):
         """Construct Class."""
         self.url = url
         self.data = data
         self.response = " "
         self.objects = []
+        self.cookies = cookies
 
     def getReq(self, data=None, json=None, files=None, allow_redirects=True,
                username=None, password=None, cert=None, cookies=None,
@@ -41,6 +42,7 @@ class Sql:
             self.response = '404'
             return '404'
         self.saveResponse(r)
+        self.cookies = cookies
         # if contains is not None:
         #     self.responseContains(contains)
     # def postPayload(self):
@@ -64,9 +66,12 @@ class Sql:
 
     def responseContains(self, content):
         """Check to see if the response contains the entered text."""
-        if content in self.response.text:
-            return True
-        else:
+        try:
+            if content in self.response.text:
+                return True
+            else:
+                return False
+        except AttributeError:
             return False
 
     def retrieveInputs(self):

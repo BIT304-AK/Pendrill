@@ -9,7 +9,8 @@ class Pendrill:
     def __init__(self, name):
         """Initialize class."""
         self.name = name
-        self.attackList = []
+        self.allAttacks = []
+        self.codeInjList = []
 
     def singleAtk(self, url, data=None, json=None, files=None,
                   allow_redirects=True, username=None, password=None,
@@ -23,11 +24,11 @@ class Pendrill:
         if attack == '404':
             return attack
         else:
-            self.saveAttack(attack)
+            self.saveAttack(attack, type="Code Injection")
             return attack
 
     def bruteForce(self, url, prefix, sufix, data, length=None, datatype=None,
-                   contains=None, action=None, username=None, password=None):
+                   contains=None, action=None, username=None, password=None, allow_redirects=True):
         """Brute Force attack."""
         if datatype == 'numbers':
             # print("Atk No", "Code", "data")
@@ -36,9 +37,9 @@ class Pendrill:
                 attack = self.createAttack(url, data)
                 payload = {'username': prefix+str(data)+sufix}
                 attack.postReq(data=payload, username=username,
-                               password=password)
+                               password=password, allow_redirects=allow_redirects)
                 # print(i, attack.response, data)
-                self.saveAttack(attack)
+                self.saveAttack(attack, type="Code Injection")
 
         if datatype == 'charset':
             i = 1
@@ -56,7 +57,7 @@ class Pendrill:
                 if self.searchInResponse(attack, contains) is True:
                     if action == "Discover Contained Chars":
                         savedDict.append(char)
-                self.saveAttack(attack)
+                self.saveAttack(attack, type="Code Injection")
                 return savedDict
             # print("Dictionary: {0}".format(''.join(savedDict)))
 
@@ -64,14 +65,18 @@ class Pendrill:
         """Save attack."""
         return Sql(url, data)
 
-    def saveAttack(self, attack):
+    def saveAttack(self, attack, type=""):
         """Save attack to list."""
-        self.attackList.append(attack)
+        self.codeInjList.append(attack)
+        self.savetoAllAttacks(attack.url, type)
+    
+    def savetoAllAttacks(self, url, type):
+        self.allAttacks.append({"url": url, "type": type})
 
     def showAttacks(self, contains=""):
         """Show attacks."""
         attackString = ""
-        for attack in self.attackList:
+        for attack in self.codeInjList:
             search = self.searchInResponse(attack, contains)
             attackString += attack.url + " " + str(attack.response.status_code) \
                 + " " + str(attack.data) + " " + str(search)

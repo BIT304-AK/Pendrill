@@ -10,6 +10,8 @@ from tkinter import ttk
 from CodeInjectionGUI import CodeInGUI
 import pendrill_gui as pg
 import ss_tab as ss
+from PendrillAllAttacks import PendrillAllAttacks
+
 class PendrillMainGUI:
 
     def __init__(self, pen):
@@ -20,15 +22,17 @@ class PendrillMainGUI:
         notebook = ttk.Notebook(self.top)
         notebook.pack(pady=10, expand=True)
         self.f1 = ttk.Frame(notebook)
-        self.f1.pack(fill='both', expand=True)
+        self.f1.pack(expand=True)
         urlLabel = tkinter.Label(self.f1, text="URL: ")
         urlLabel.grid(row=1, column=0)
         self.urlEntry = ttk.Entry(self.f1, textvariable='url', background="Red")
         self.urlEntry.grid(row=1, column=1, padx=5, pady=5)
 
-        # Frame for Code Injection section
+        
         notebook2 = ttk.Notebook(self.top)
         notebook2.pack(pady=10, expand=True)
+        
+        # Frame for Code Injection section
         self.codeInFrame = ttk.Frame(notebook2)
         self.codeInFrame.pack(fill='both', expand=True)
         notebook2.add(self.codeInFrame, text='Code Injections')
@@ -45,4 +49,10 @@ class PendrillMainGUI:
         notebook2.add(self.ssFrame, text='Session scanning')
         ss.ss_gui(self.ssFrame, self.urlEntry)
 
+        # Frame for All attacks section
+        self.allAtkFrame = ttk.Frame(notebook2)
+        self.allAtkFrame.pack(fill='both', expand=True)
+        notebook2.add(self.allAtkFrame, text='All Attacks')
+        self.allAtks= PendrillAllAttacks(pen, self.allAtkFrame)
+        self.allAtkFrame.bind('<Button-1>', lambda e:self.allAtks.refreshTable())
         self.top.mainloop()
