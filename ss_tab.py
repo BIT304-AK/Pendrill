@@ -22,8 +22,8 @@ def ss_gui(pen, root, urlEntry):
 
     urlEntry = urlEntry
 
-    result = tk.Text(tab_main, height=10, width=50)
+    result = tk.Text(tab_main, height=10, width=80)
     scanPage = tk.Button(tab_main, text="Scan webpage", command=lambda:session_scan(pen, result, urlEntry.get()))
-    scanPage.grid(column=0, row=0)
-    result.grid(row=1, column=1, pady=30)
+    scanPage.grid(column=0, row=1)
+    result.grid(row=0, column=0, pady=30)
     tab_main.pack(expand=1, fill='both')

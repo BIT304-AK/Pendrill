@@ -45,7 +45,7 @@ def xss_gui(pen, root, urlEntry):
     tab_main = ttk.Notebook(root)
     urlEntry = urlEntry
 
-    result = tk.Text(tab_main, height=10, width=50)
+    result = tk.Text(tab_main, height=10, width=80)
     xssButton = tk.Button(tab_main, text="XSS", command=lambda:XSS_function(pen, result, urlEntry.get()))
     tab_main.pack(expand=1, fill="both")
     xssButton.grid(row=1, column=0)
