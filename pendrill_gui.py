@@ -24,21 +24,21 @@ def run_XSS(url):
         return result
 
 def clearTextInput(result):
-
     result.delete("1.0","end")
 
 
 #https://xss-game.appspot.com/level1/frame
-def XSS_function(result, urlEntry):
+def XSS_function(pen, result, urlEntry):
     clearTextInput(result)
     print(urlEntry)
     ex = run_XSS(urlEntry)
     result.insert(END, ex)
+    pen.savetoAllAttacks(urlEntry, "XSS")
     print(ex)
 
 
 
-def xss_gui(root, urlEntry):
+def xss_gui(pen, root, urlEntry):
     # root = tk.Tk()
     # root.geometry("800x600")
 
@@ -46,8 +46,8 @@ def xss_gui(root, urlEntry):
     urlEntry = urlEntry
 
     result = tk.Text(tab_main, height=10, width=50)
-    xssButton = tk.Button(tab_main, text="XSS", command=lambda:XSS_function(result, urlEntry.get()))
+    xssButton = tk.Button(tab_main, text="XSS", command=lambda:XSS_function(pen, result, urlEntry.get()))
+    tab_main.pack(expand=1, fill="both")
+    xssButton.grid(row=1, column=0)
+    result.grid(row=0, column=0, pady=30)
     
-    xssButton.grid(row=0, column=0)
-    result.grid(row=1, column=1, pady=30)
-    tab_main.pack(expand=1, fill='both')

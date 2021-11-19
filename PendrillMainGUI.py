@@ -36,23 +36,23 @@ class PendrillMainGUI:
         self.codeInFrame = ttk.Frame(notebook2)
         self.codeInFrame.pack(fill='both', expand=True)
         notebook2.add(self.codeInFrame, text='Code Injections')
-        CodeInGUI(pen, self.codeInFrame, self.urlEntry)
+        CodeInGUI(self.pen, self.codeInFrame, self.urlEntry)
 
 
         self.xssFrame = ttk.Frame(notebook2)
         self.xssFrame.pack(fill='both', expand=True)
         notebook2.add(self.xssFrame, text='XSS')
-        pg.xss_gui(self.xssFrame, self.urlEntry)
+        pg.xss_gui(self.pen, self.xssFrame, self.urlEntry)
 
         self.ssFrame = ttk.Frame(notebook2)
         self.ssFrame.pack(fill='both', expand=True)
         notebook2.add(self.ssFrame, text='Session scanning')
-        ss.ss_gui(self.ssFrame, self.urlEntry)
+        ss.ss_gui(self.pen, self.ssFrame, self.urlEntry)
 
         # Frame for All attacks section
         self.allAtkFrame = ttk.Frame(notebook2)
         self.allAtkFrame.pack(fill='both', expand=True)
         notebook2.add(self.allAtkFrame, text='All Attacks')
-        self.allAtks= PendrillAllAttacks(pen, self.allAtkFrame)
-        self.allAtkFrame.bind('<Button-1>', lambda e:self.allAtks.refreshTable())
+        self.allAtks= PendrillAllAttacks(self.pen, self.allAtkFrame)
+        self.allAtkFrame.bind('<FocusIn>', lambda e:self.allAtks.refreshTable())
         self.top.mainloop()
