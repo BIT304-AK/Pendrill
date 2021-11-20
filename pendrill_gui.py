@@ -33,7 +33,7 @@ def XSS_function(pen, result, urlEntry):
     print(urlEntry)
     ex = run_XSS(urlEntry)
     result.insert(END, ex)
-    pen.savetoAllAttacks(urlEntry, "XSS")
+    pen.savetoAllAttacks(urlEntry, "XSS", ex)
     print(ex)
 
 

@@ -11,7 +11,7 @@ def session_scan(pen, result, urlEntry):
     text = ss.doAll()
     print(text)
     result.insert(END, text)
-    pen.savetoAllAttacks(urlEntry, "Session scanning")
+    pen.savetoAllAttacks(urlEntry, "Session scanning", text)
 
 def clearTextInput(result):
     result.delete("1.0","end")

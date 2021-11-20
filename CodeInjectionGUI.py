@@ -185,19 +185,6 @@ class CodeInGUI:
         """Return StringVar."""
         return sv.get()
 
-    def dataEntrys(self, prefix, text):
-        """Affect the data entry."""
-        self.inputList[prefix] = text
-        self.dataEntry.delete(0, 'end')
-        i = 0
-        n = 0
-        for k, v in self.inputList.items():
-            self.dataEntry.insert(i, k + "=" + v)
-            if n + 1 != len(self.inputList):
-                self.dataEntry.insert('end', "&")
-            i = i + len(k + "=" + v + "&")
-            n = n + 1
-
     def getFormInputsBF(self, attack):
         """Return textbox value."""
         for pos in self.f3.grid_slaves():
@@ -299,7 +286,6 @@ class CodeInGUI:
                 else:
                     templist.append(i['data']) # if bf not selected, entry added as is
                 formListList.append(templist) #adds the list of possible payloads for entry i
-
             # creates the cookie data payloads
             cookieListList = []
             for i in cookieData:
@@ -390,7 +376,8 @@ class CodeInGUI:
                                                 variable=self.saveBfChkState, name='tbf'+entryName)
         self.saveBfCheckbox.grid(row=startRow+7, column=startCol, padx=5, pady=2)
         if cookie is True:
-            deleteCookieBtn = tkinter.Button(location, text="Delete Cookie",name="del"+entryName, command=lambda: self.deleteCookie(entryName))
+            deleteCookieBtn = tkinter.Button(location, text="Delete Cookie",name="del"+entryName, 
+                                            command=lambda: self.deleteCookie(entryName))
             deleteCookieBtn.grid(row=startRow+7, column=startCol+2)
     
     # deletes a cookie entry set

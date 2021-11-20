@@ -68,10 +68,10 @@ class Pendrill:
     def saveAttack(self, attack, type=""):
         """Save attack to list."""
         self.codeInjList.append(attack)
-        self.savetoAllAttacks(attack.url, type)
+        self.savetoAllAttacks(attack.url, type, attack.response.text)
     
-    def savetoAllAttacks(self, url, type):
-        self.allAttacks.append({"url": url, "type": type})
+    def savetoAllAttacks(self, url, type, response=""):
+        self.allAttacks.append({"url": url, "type": type, "response":response})
 
     def showAttacks(self, contains=""):
         """Show attacks."""
