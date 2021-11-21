@@ -1,17 +1,30 @@
 from tkinter.constants import END
+
+from requests.exceptions import InvalidURL, SSLError
+from urllib3.exceptions import LocationParseError
 import session_scan as ss
 from session_scan import ScanHeaders
-from tkinter import ttk
+from tkinter import messagebox, ttk
 import tkinter as tk
 
 def session_scan(pen, result, urlEntry):
     clearTextInput(result)
-    ss = ScanHeaders(urlEntry)
-    text = ""
-    text = ss.doAll()
-    print(text)
-    result.insert(END, text)
-    pen.savetoAllAttacks(urlEntry, "Session scanning", text)
+    
+    try:
+        ss = ScanHeaders(urlEntry)
+        text = ""
+        text = ss.doAll()
+        print(text)
+        result.insert(END, text)
+        pen.savetoAllAttacks(urlEntry, "Session scanning", text)
+    except LocationParseError:
+        messagebox.showerror("Invalid Url", "Invalid Url entered!")
+    except InvalidURL:
+        messagebox.showerror("Invalid Url", "Invalid Url entered!")
+    except SSLError:
+        messagebox.showerror("Url not resolved", "URL not found!")
+    except:
+        messagebox.showerror("Not Allowed", "Action not allowed!")
 
 def clearTextInput(result):
     result.delete("1.0","end")

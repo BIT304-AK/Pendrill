@@ -4,6 +4,7 @@ from tkinter import ttk
 import tkinter as tk
 from tkinter.constants import BOTH, COMMAND, END, W
 import requests
+from requests.models import InvalidURL
 import xss
 import session_scan as ss
 
@@ -15,6 +16,7 @@ def run_XSS(url):
     result = "" + numOfForms
     for form in forms:
         formDetails = xss.get_form_details(form)
+        print(xss.form_submission(formDetails, url, js).content)
         content = xss.form_submission(formDetails, url, js).content.decode('utf-8')
         if js in content:
             result += "\nXSS vulnerability detected"
@@ -29,12 +31,17 @@ def clearTextInput(result):
 
 #https://xss-game.appspot.com/level1/frame
 def XSS_function(pen, result, urlEntry):
-    clearTextInput(result)
-    print(urlEntry)
-    ex = run_XSS(urlEntry)
-    result.insert(END, ex)
-    pen.savetoAllAttacks(urlEntry, "XSS", ex)
-    print(ex)
+    try:
+        clearTextInput(result)
+        print(urlEntry)
+        ex = run_XSS(urlEntry)
+        result.insert(END, ex)
+        pen.savetoAllAttacks(urlEntry, "XSS", ex)
+        print(ex)
+    except InvalidURL as e:
+        messagebox.showerror("Invalid Url", "Invalid Url entered!")
+    except:
+        messagebox.showerror("Not Allowed", "Action not allowed!")
 
 
 
