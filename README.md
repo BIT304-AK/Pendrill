@@ -1,5 +1,5 @@
 # Pendrill
-The application can be run by running the Pendrill_Driver.py file
+The application can be run by running the Pendrill_Driver.py file or the Pendrill_Driver.py located in the dist folder
 
 The application uses tkinter for coding the GUI
 
